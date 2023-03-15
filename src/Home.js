@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -7,31 +7,35 @@ import {
   TouchableOpacity,
   TextInput,
   ImageBackground,
-  FlatList
+  FlatList, 
+  StatusBar
 } from "react-native";
 import VerbItem from "./Component/VerbItem";
-import data from '../data.json';
+import jsondata from '../data.json';
 
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      search: "",
+      keyword: "",
+      searching: false,
       showList: false,
-      verbs: []
+      verbs: [],
+      searchedVerbs: []
     };
   }
 
   componentDidMount() {
-    this.setState({verbs: data});
+    this.setState({verbs: jsondata});
+    console.log(jsondata)
   }
 
   bodyView = () => {
     if (!this.state.showList)
     {
-      // return this.welcomeView();
-      return this.flatList();
+      return this.welcomeView();
+      // return this.flatList();
     }
     else
     {
@@ -59,14 +63,26 @@ export default class App extends React.Component {
   }
 
   flatList = () => {
-    return(
+    return (
       <FlatList
         data={this.state.verbs}
-        renderItem={({item}) => <VerbItem verb={item}/>}
+        renderItem={({ item }) => <VerbItem verb={item} />}
         keyExtractor={(item) => item.id.toString()}
-        style={{width: '100%'}}
+        style={{ width: "100%" }}
       />
-    )
+    );
+  }
+
+  search = () => {
+    if(this.state.keyword != ""){
+      this.setState({
+        showList: true,
+        verbs: this.state.verbs.filter(verb => [
+          verb.Infinitive.toLowerCase().includes(this.state.keyword.toLowerCase()), 
+          verb.SimplePast.toLowerCase().includes(this.state.keyword.toLowerCase())
+        ])
+      });
+    }
   }
 
   render() {
@@ -78,22 +94,30 @@ export default class App extends React.Component {
           style={[styles.searchBox, styles.shadowed]}
           blurRadius={1}
         >
+          <Text style={{
+            fontSize: 26, fontWeight: "bold", color: "#1E305E",
+          }}>
+            I-VERB
+          </Text>
           <TextInput
             style={[styles.textInput, styles.shadowed]}
             placeholder="Entrez le verbe à rechercher"
             placeholderTextColor="#888"
-            value={this.state.search}
+            value={this.state.keyword}
             onChangeText={(verb) => {
-              this.setState({ search: verb });
+              this.setState({
+                keyword: verb,
+                verbs: jsondata
+              });
             }}
           />
           <TouchableOpacity
             style={[styles.button, styles.shadowed]}
-            onPress={() => console.log(this.state.search)}
+            onPress={() => this.search()}
           >
             <Text style={styles.buttonText}>Rechercher</Text>
           </TouchableOpacity>
-          <StatusBar style="auto"></StatusBar>
+          <StatusBar StatusBarStyle="light-content"></StatusBar>
         </ImageBackground>
         {/* HEADER END */}
 
@@ -115,10 +139,8 @@ const styles = StyleSheet.create({
     height: 170,
     width: "100%",
     alignItems: "center",
-    paddingTop: 30,
-    paddingBottom: 30,
-    // borderBottomLeftRadius: 20,
-    // borderBottomRightRadius: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
     overflow: 'hidden',
   },
   button: {
