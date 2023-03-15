@@ -13,4 +13,10 @@ To run the app in development mode, use the following command:
 
 ``expo start``
 
-This will start the Expo development server, and you'll be able to view the app in your browser or in the Expo app on your phone.
+This will start the Expo development server.
+
+You'll be able to view the app in your browser by this command:
+
+``expo start --web``
+
+or in the Expo app on your phone.
