@@ -5,9 +5,9 @@ Getting Started
 
 To get started with the app, clone this repository and install the necessary dependencies:
 
-``git clone https://github.com/your-username/my-react-native-app.git``
-``cd my-react-native-app``
-``npm install``
+- ``git clone https://github.com/your-username/my-react-native-app.git``
+- ``cd my-react-native-app``
+- ``npm install``
 
 To run the app in development mode, use the following command:
 
