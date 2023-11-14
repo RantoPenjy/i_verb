@@ -1,4 +1,4 @@
-[
+const verbs = [
   {
     "Infinitive": "arise",
     "SimplePast": "arose",
@@ -1388,4 +1388,6 @@
     "French": "Écrire",
     "id": 198
   }
-]
+];
+
+export default verbs;

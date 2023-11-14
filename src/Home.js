@@ -1,5 +1,4 @@
-import React from "react";
-// import { StatusBar } from "expo-status-bar";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,126 +6,132 @@ import {
   TouchableOpacity,
   TextInput,
   ImageBackground,
-  FlatList, 
-  StatusBar
+  FlatList,
+  StatusBar,
 } from "react-native";
 import VerbItem from "./Component/VerbItem";
-import jsondata from '../data.json';
+import jsondata from "../data.js";
 
+export default function App() {
+  const [keyword, setKeyword] = useState("");
+  const [showList, setShowList] = useState(false);
+  const [verbs, setVerbs] = useState([]);
+  const [searchedVerbs, setSearchedVerbs] = useState([]);
 
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      keyword: "",
-      searching: false,
-      showList: false,
-      verbs: [],
-      searchedVerbs: []
-    };
-  }
+  useEffect(() => {
+    setVerbs(jsondata);
+  }, []);
 
-  componentDidMount() {
-    this.setState({verbs: jsondata});
-    console.log(jsondata)
-  }
+  const bodyView = () => {
+    return !showList ? welcomeView() : flatList();
+  };
 
-  bodyView = () => {
-    if (!this.state.showList)
-    {
-      return this.welcomeView();
-      // return this.flatList();
-    }
-    else
-    {
-      return this.flatList();
-    }
-  }
-
-  welcomeView = () => {
+  const welcomeView = () => {
     return (
       <View style={styles.bodyContainer}>
         <View style={{ width: "80%", margin: 20 }}>
           <Text style={{ textAlign: "center", fontSize: 22 }}>
-            Bienvenue sur <b>IVerb</b> <br />
-            La liste des verbes irreguliers anglais
+            Bienvenue sur <b>I'Verb</b> <br />
+            La liste des verbes irréguliers anglais
           </Text>
         </View>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => this.setState({ showList: true })}
+          style={[styles.button, styles.shadowed]}
+          onPress={() => setShowList(true)}
         >
           <Text style={styles.buttonText}>Afficher la liste</Text>
         </TouchableOpacity>
       </View>
     );
-  }
+  };
 
-  flatList = () => {
+  const flatList = () => {
+    const data = searchedVerbs.length > 0 ? searchedVerbs : verbs;
+
     return (
-      <FlatList
-        data={this.state.verbs}
-        renderItem={({ item }) => <VerbItem verb={item} />}
-        keyExtractor={(item) => item.id.toString()}
-        style={{ width: "100%" }}
-      />
-    );
-  }
-
-  search = () => {
-    if(this.state.keyword != ""){
-      this.setState({
-        showList: true,
-        verbs: this.state.verbs.filter(verb => [
-          verb.Infinitive.toLowerCase().includes(this.state.keyword.toLowerCase()), 
-          verb.SimplePast.toLowerCase().includes(this.state.keyword.toLowerCase())
-        ])
-      });
-    }
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        {/* HEADER START*/}
-        <ImageBackground
-          source={require("../assets/UK-USA flag.jpg")}
-          style={[styles.searchBox, styles.shadowed]}
-          blurRadius={1}
-        >
-          <Text style={{
-            fontSize: 26, fontWeight: "bold", color: "#1E305E",
-          }}>
-            I-VERB
-          </Text>
-          <TextInput
-            style={[styles.textInput, styles.shadowed]}
-            placeholder="Entrez le verbe à rechercher"
-            placeholderTextColor="#888"
-            value={this.state.keyword}
-            onChangeText={(verb) => {
-              this.setState({
-                keyword: verb,
-                verbs: jsondata
-              });
-            }}
-          />
+      <>
+        <FlatList
+          data={data}
+          renderItem={({ item }) => <VerbItem verb={item} />}
+          keyExtractor={(item) => item.id.toString()}
+          style={{ width: "100%", marginBottom: 10 }}
+        />
+        {searchedVerbs.length > 0 && (
           <TouchableOpacity
-            style={[styles.button, styles.shadowed]}
-            onPress={() => this.search()}
+            style={[styles.button, styles.shadowed, { marginBottom: 10 }]}
+            onPress={() => {
+              setSearchedVerbs([]);
+            }}
           >
-            <Text style={styles.buttonText}>Rechercher</Text>
+            <Text style={styles.buttonText}>Afficher toutes les verbes</Text>
           </TouchableOpacity>
-          <StatusBar StatusBarStyle="light-content"></StatusBar>
-        </ImageBackground>
-        {/* HEADER END */}
-
-        {/* BODY START */}
-        {this.bodyView()}
-        {/* BODY END */}
-      </View>
+        )}
+      </>
     );
-  }
+  };
+
+  const search = () => {
+    if (keyword !== "") {
+      setShowList(true);
+      setSearchedVerbs(
+        verbs.filter(
+          (verb) =>
+            verb.Infinitive.toLowerCase().includes(keyword.toLowerCase()) ||
+            verb.SimplePast.toLowerCase().includes(keyword.toLowerCase()) ||
+            verb.French.toLowerCase().includes(keyword.toLowerCase()),
+        ),
+      );
+    } else {
+      setSearchedVerbs([]);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* HEADER START*/}
+      <ImageBackground
+        source={require("../assets/UK-USA flag.jpg")}
+        style={[styles.searchBox, styles.shadowed]}
+        blurRadius={1}
+      >
+        <Text
+          style={{
+            fontSize: 26,
+            fontWeight: "bold",
+            color: "#1E305E",
+            textShadowColor: "#fff",
+            textShadowOffset: { width: 0, height: 2 },
+            textShadowOpacity: 0.5,
+            textShadowRadius: 10,
+          }}
+        >
+          I'VERB
+        </Text>
+        <TextInput
+          style={[styles.textInput, styles.shadowed]}
+          placeholder="Entrez le verbe à rechercher"
+          placeholderTextColor="#888"
+          value={keyword}
+          onChangeText={(verb) => {
+            setKeyword(verb);
+            setVerbs(jsondata);
+          }}
+        />
+        <TouchableOpacity
+          style={[styles.button, styles.shadowed]}
+          onPress={search}
+        >
+          <Text style={styles.buttonText}>Rechercher</Text>
+        </TouchableOpacity>
+        <StatusBar StatusBarStyle="light-content"></StatusBar>
+      </ImageBackground>
+      {/* HEADER END */}
+
+      {/* BODY START */}
+      {bodyView()}
+      {/* BODY END */}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -141,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 20,
     paddingBottom: 20,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   button: {
     backgroundColor: "#1E305E",
@@ -169,13 +174,13 @@ const styles = StyleSheet.create({
   shadowed: {
     shadowColor: "#333",
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 10
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
   },
   bodyContainer: {
-    flex: 5, 
-    width: "100%", 
-    alignItems: 'center', 
-    justifyContent: 'center'
-  }
+    flex: 5,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
