@@ -5,19 +5,24 @@ Getting Started
 
 To get started with the app, clone this repository and install the necessary dependencies:
 
-```
+```bash
   git clone https://github.com/RantoPenjy/i_verb.git
 ```
-```
+```bash
   cd i_verb
 ```
-```
+```bash
   npm install
 ```
 
-To run the app in development mode, use the following command:
+To run the app in development mode, install the expo cli with this command:
 
+```bash
+  npm install -g expo-cli --force
 ```
+Then use the following command:
+
+```bash
   expo start
 ```
 
@@ -25,7 +30,7 @@ This will start the Expo development server.
 
 You'll be able to view the app in your browser by this command:
 
-```
+```bash
   expo start --web
 ```
 
