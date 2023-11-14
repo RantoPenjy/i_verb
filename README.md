@@ -1,4 +1,4 @@
-# I-verb
+# I'verb
 This is a React Native project that contains a comprehensive list of English irregular verbs and their corresponding French translations. The repository provides a user-friendly interface that allows users to search and browse the list of verbs.
 
 Getting Started
