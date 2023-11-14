@@ -4,6 +4,10 @@
     {
       "name": "Install Dependencies",
       "command": "npm install"
+    },
+    {
+      "name": "Install Expo CLI",
+      "command": "npm install -g expo-cli --force"
     }
   ],
 
