@@ -11,12 +11,21 @@ import {
 } from "react-native";
 import VerbItem from "./Component/VerbItem";
 import jsondata from "../data.js";
+import { useNavigation } from "@react-navigation/native";
 
-export default function App() {
+const HomeScreen = () => {
   const [keyword, setKeyword] = useState("");
+  const [staticKeyword, setStaticKeyword] = useState("");
   const [showList, setShowList] = useState(false);
   const [verbs, setVerbs] = useState([]);
   const [searchedVerbs, setSearchedVerbs] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const navigation = useNavigation();
+
+  const navigateToAboutScreen = () => {
+    navigation.navigate("About");
+  };
 
   useEffect(() => {
     setVerbs(jsondata);
@@ -47,24 +56,70 @@ export default function App() {
 
   const flatList = () => {
     const data = searchedVerbs.length > 0 ? searchedVerbs : verbs;
+    const hasResults = hasSearched && searchedVerbs.length > 0;
+    const hasNoResults = hasSearched && searchedVerbs.length == 0;
 
     return (
       <>
-        <FlatList
-          data={data}
-          renderItem={({ item }) => <VerbItem verb={item} />}
-          keyExtractor={(item) => item.id.toString()}
-          style={{ width: "100%", marginBottom: 10 }}
-        />
-        {searchedVerbs.length > 0 && (
-          <TouchableOpacity
-            style={[styles.button, styles.shadowed, { marginBottom: 10 }]}
-            onPress={() => {
-              setSearchedVerbs([]);
+        {hasResults && (
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginTop: 10,
+              marginLeft: 10,
+              alignSelf: "flex-start",
             }}
           >
-            <Text style={styles.buttonText}>Afficher toutes les verbes</Text>
-          </TouchableOpacity>
+            {data.length > 1
+              ? `${data.length} résultats trouvés:`
+              : "Un seul résultat trouvé:"}
+          </Text>
+        )}
+        {!hasSearched && searchedVerbs.length == 0 && (
+          <FlatList
+            data={verbs}
+            renderItem={({ item }) => <VerbItem verb={item} />}
+            keyExtractor={(item) => item.id.toString()}
+            style={{ width: "100%", marginBottom: 10 }}
+          />
+        )}
+        {hasResults && (
+          <>
+            <FlatList
+              data={searchedVerbs}
+              renderItem={({ item }) => <VerbItem verb={item} />}
+              keyExtractor={(item) => item.id.toString()}
+              style={{ width: "100%", marginBottom: 10 }}
+            />
+            <TouchableOpacity
+              style={[styles.button, styles.shadowed, { marginBottom: 10 }]}
+              onPress={() => {
+                setSearchedVerbs([]);
+                setHasSearched(false);
+              }}
+            >
+              <Text style={styles.buttonText}>Afficher toutes les verbes</Text>
+            </TouchableOpacity>
+          </>
+        )}
+        {hasNoResults && (
+          <>
+            <View style={styles.bodyContainer}>
+              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+                Il n'y a pas de résultats pour {staticKeyword}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.button, styles.shadowed, { marginBottom: 10 }]}
+              onPress={() => {
+                setSearchedVerbs([]);
+                setHasSearched(false);
+              }}
+            >
+              <Text style={styles.buttonText}>Afficher toutes les verbes</Text>
+            </TouchableOpacity>
+          </>
         )}
       </>
     );
@@ -81,6 +136,8 @@ export default function App() {
             verb.French.toLowerCase().includes(keyword.toLowerCase()),
         ),
       );
+      setStaticKeyword(keyword);
+      setHasSearched(true);
     } else {
       setSearchedVerbs([]);
     }
@@ -108,7 +165,11 @@ export default function App() {
           I'VERB
         </Text>
         <TextInput
-          style={[styles.textInput, styles.shadowed]}
+          style={[
+            styles.textInput,
+            styles.shadowed,
+            { borderColor: keyword === "" && hasSearched ? "red" : "#888" },
+          ]}
           placeholder="Entrez le verbe à rechercher"
           placeholderTextColor="#888"
           value={keyword}
@@ -123,6 +184,12 @@ export default function App() {
         >
           <Text style={styles.buttonText}>Rechercher</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.absoluteButton, styles.shadowed]}
+          onPress={navigateToAboutScreen}
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>?</Text>
+        </TouchableOpacity>
         <StatusBar StatusBarStyle="light-content"></StatusBar>
       </ImageBackground>
       {/* HEADER END */}
@@ -132,11 +199,12 @@ export default function App() {
       {/* BODY END */}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: "100%",
     backgroundColor: "#fff",
     alignItems: "center",
   },
@@ -161,6 +229,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     padding: 10,
   },
+  absoluteButton: {
+    position: "absolute",
+    width: 30,
+    height: 30,
+    top: 20,
+    right: 20,
+    backgroundColor: "rgba(51, 51, 51, 0.7)",
+    padding: 10,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   textInput: {
     width: "80%",
     height: 40,
@@ -184,3 +264,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default HomeScreen;

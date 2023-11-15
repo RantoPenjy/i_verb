@@ -1,33 +1,37 @@
 {
   "expo": {
-    "name": "iverb",
+    "name": "I'VERB - Verbes Irrégulier",
     "slug": "iverb",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo_iverb.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo_iverb.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo_iverb.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.rantopenjy.iverb"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo_iverb.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "852686d7-7647-48f6-8f5e-ca8487466159"
+      }
     }
   }
 }
